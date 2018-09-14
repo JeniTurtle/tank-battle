@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+	<canvas id="myCanvas" width="400" height="300" style="background-color:#000000;"></canvas>
+	<span id="aa"></span>
+	<script type="text/javascript" src="tank.js"></script>
+	<script type="text/javascript">
+
+	var moveLeft = 0;
+    var moveRight = 0;
+    var moveUp = 0;
+    var moveDown = 0;
+		
+	// 创建一个英雄坦克
+	var hero = new Hero(190,240,1);	
+	
+	// 创建英雄子弹数组
+	var heroBullets = new Array();	
+
+	// 创建一个敌人数组
+	var enemyTanks = new Array();
+
+	// 定义敌人子弹数组
+	var enemyBullets=new Array();
+
+	// 创建一个爆炸数组
+	var bombs=new Array();
+
+	// 创建敌人坦克
+	for(var i=0; i<3; i++) {
+		var enemy = new Enemy(Math.round(Math.random()*350),Math.round(Math.random()*100),2);
+		enemyTanks[i] = enemy;
+	}
+
+    document.onkeyup = function(ev){
+        var ev = ev || event;
+        var code = String.fromCharCode(ev.keyCode);
+		
+		switch(code) {
+			case "&" :
+				moveUp = 0;
+				break;
+			case "(" :
+				moveDown = 0;
+				break;
+			case "%" :
+				moveLeft = 0;
+				break;
+			case "'" :
+				moveRight = 0;
+				break;
+		}
+    }
+
+	document.onkeydown = function(ev) {
+		var ev = ev || event;
+		var code = String.fromCharCode(ev.keyCode);
+		
+		switch(code) {
+			case "&" :
+				moveUp = 1;
+				break;
+			case "(" :
+				moveDown = 1;
+				break;
+			case "%" :
+				moveLeft = 1;
+				break;
+			case "'" :
+				moveRight = 1;
+				break;
+			case "X" :
+				hero.shotEnemy();
+				break;
+		}
+	}
+
+	function tankMove() {
+		if(moveLeft == 1){
+            hero.direct = 3;
+			hero.moveLeft();
+        } else if(moveUp == 1){
+            hero.direct = 1;
+			hero.moveUp();
+        } else if(moveRight == 1){
+            hero.direct = 4;
+			hero.moveRight();
+        } else if(moveDown == 1){
+            hero.direct = 2;
+			hero.moveDown();
+        }
+	}
+
+	function flashTankMap() {
+		tankMove();
+
+		// 清除画布
+		cxt.clearRect(0,0,400,300);
+		
+		// 制作英雄坦克
+		makeTank(hero);
+			
+		// 制作英雄子弹	
+		makeHeroBullet(heroColor[1]);
+
+		// 制作敌人坦克
+		for(var i=0; i<enemyTanks.length; i++) {
+			makeTank(enemyTanks[i]);
+		}
+		
+		// 制作敌人子弹
+		makeEnemyBullet(enemyColor[1]);
+
+		// 移动敌人坦克
+		moveEnemyTank();
+
+		// 制作爆炸
+		makeBomb();
+
+		isGameOver();
+	}
+
+	var flash = window.setInterval("flashTankMap()", 50);
+
+	// 判断游戏是否结束
+	function isGameOver() {
+		if(!hero.isLive || enemyTanks.length == 0) {
+			if(hero.isLive) {
+				var text = "恭喜您！胜利啦！";
+				cxt.fillStyle = "#FF0000";
+				cxt.font = "25px 华文彩云";
+				cxt.fillText(text, 115, 150);	
+			}
+			else {
+				var text = "游戏结束";		
+				cxt.fillStyle = "#FF0000";
+				cxt.font = "25px 华文彩云";
+				cxt.fillText(text, 150, 150);	
+			}
+			
+		}
+	}
+	</script>
+</body>
+</html>
